@@ -45,7 +45,9 @@ function showScreen(name) {
 // SOCKET INIT
 // =============================================
 function initSocket() {
-  socket = io('http://testris-server-o4xiyr-541f00-188-245-113-32.traefik.me');
+  socket = io('http://testris-server-o4xiyr-541f00-188-245-113-32.traefik.me', {
+    transports: ['websocket', 'polling'],
+  });
   mySocketId = null;
 
   socket.on('connect', () => {
