@@ -115,6 +115,7 @@ document.getElementById('btn-join').addEventListener('click', () => {
       isSpectator = true;
       myTeam = null;
       document.getElementById('spectator-badge').classList.remove('hidden');
+      document.getElementById('btn-switch-team').classList.add('hidden');
     } else {
       myTeam = res.team;
       mySlot = res.slot;
@@ -133,6 +134,15 @@ document.getElementById('btn-copy-code').addEventListener('click', () => {
   navigator.clipboard.writeText(roomCode).catch(() => {});
   document.getElementById('btn-copy-code').textContent = '✅ Copied!';
   setTimeout(() => document.getElementById('btn-copy-code').textContent = '📋 Copy Code', 1500);
+});
+
+document.getElementById('btn-switch-team').addEventListener('click', () => {
+  if (isSpectator) return;
+  socket.emit('switchTeam', (res) => {
+    if (res?.error) return alert(res.error);
+    myTeam = res.team;
+    isHost = mySlot === 0;
+  });
 });
 
 document.getElementById('btn-start').addEventListener('click', () => {

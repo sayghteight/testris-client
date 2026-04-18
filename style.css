@@ -219,6 +219,12 @@ input[type="text"]:focus { border-color: var(--accent-a); }
   color: var(--accent-gold);
 }
 
+.waiting-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 .waiting-hint {
   color: var(--muted);
   font-size: 13px;
