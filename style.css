@@ -1,0 +1,430 @@
+/* =============================================
+   TETRISS - Stylesheet
+   ============================================= */
+
+:root {
+  --bg: #0a0a0f;
+  --surface: #13131a;
+  --surface2: #1c1c26;
+  --border: #2a2a3a;
+  --text: #e8e8f0;
+  --muted: #7070a0;
+  --accent-a: #4488ff;
+  --accent-b: #ff4455;
+  --accent-gold: #ffcc44;
+  --radius: 8px;
+  --cell: 20px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ---- Screens ---- */
+.screen {
+  display: none;
+  width: 100%;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+}
+.screen.active {
+  display: flex;
+}
+
+/* ---- Buttons ---- */
+.btn {
+  padding: 10px 22px;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  user-select: none;
+}
+.btn:active { transform: scale(0.97); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-primary  { background: var(--accent-a); color: #fff; }
+.btn-secondary { background: var(--accent-b); color: #fff; }
+.btn-ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-sm { padding: 6px 14px; font-size: 13px; }
+
+/* ---- Inputs ---- */
+input[type="text"] {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 10px 14px;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+input[type="text"]:focus { border-color: var(--accent-a); }
+
+/* ---- Utilities ---- */
+.hidden { display: none !important; }
+.error-msg {
+  color: var(--accent-b);
+  font-size: 13px;
+  margin-top: 10px;
+  min-height: 18px;
+}
+
+/* =============================================
+   LOBBY SCREEN
+   ============================================= */
+.lobby-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 40px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  min-width: 340px;
+}
+
+.logo {
+  font-size: 42px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, var(--accent-a), #aa44ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: -12px;
+}
+
+.name-input-wrap input {
+  width: 260px;
+  text-align: center;
+}
+
+.lobby-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.join-wrap {
+  display: flex;
+  gap: 8px;
+}
+
+.join-wrap input {
+  width: 140px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-align: center;
+}
+
+/* =============================================
+   WAITING ROOM
+   ============================================= */
+.waiting-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 36px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  min-width: 480px;
+}
+
+.code-badge {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 4px 14px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 22px;
+  letter-spacing: 5px;
+  color: var(--accent-gold);
+}
+
+.teams-grid {
+  display: grid;
+  grid-template-columns: 1fr 48px 1fr;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+}
+
+.team-box {
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  min-height: 100px;
+}
+.team-box.team-a { border-color: var(--accent-a); }
+.team-box.team-b { border-color: var(--accent-b); }
+
+.team-label {
+  font-weight: 700;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.player-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.player-slot {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.player-slot.filled {
+  border-style: solid;
+  border-color: var(--accent-a);
+  color: var(--text);
+}
+.player-slot.filled.team-b { border-color: var(--accent-b); }
+.player-slot.offline { opacity: 0.5; }
+
+.vs-badge {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--accent-gold);
+}
+
+.waiting-hint {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.spectator-tag {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: var(--accent-gold);
+}
+
+/* =============================================
+   GAME SCREEN
+   ============================================= */
+.game-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+}
+
+.team-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.team-header {
+  font-weight: 800;
+  font-size: 16px;
+  padding: 6px 18px;
+  border-radius: 20px;
+}
+.team-a-header { background: rgba(68, 136, 255, 0.2); color: var(--accent-a); border: 1px solid var(--accent-a); }
+.team-b-header { background: rgba(255, 68, 85, 0.2); color: var(--accent-b); border: 1px solid var(--accent-b); }
+
+.team-stats {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+.team-stats span {
+  display: inline-block;
+  margin: 0 8px;
+}
+.team-stats .stat-val {
+  color: var(--text);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.board-wrap {
+  border: 2px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #080810;
+  box-shadow: 0 0 30px rgba(0,0,0,0.5);
+}
+.team-a-panel .board-wrap { border-color: var(--accent-a); }
+.team-b-panel .board-wrap { border-color: var(--accent-b); }
+
+canvas {
+  display: block;
+}
+
+.next-pieces-row {
+  display: flex;
+  gap: 10px;
+}
+
+.next-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.next-label {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.next-canvas {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+/* Center panel */
+.center-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding-top: 60px;
+  min-width: 120px;
+}
+
+.vs-center {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--accent-gold);
+  text-shadow: 0 0 20px rgba(255,200,68,0.5);
+}
+
+.garbage-bar {
+  width: 24px;
+  min-height: 8px;
+  border-radius: 3px;
+  transition: height 0.2s;
+  position: relative;
+}
+.garbage-a { background: var(--accent-a); }
+.garbage-b { background: var(--accent-b); }
+
+.controls-hint {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.ctrl-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+}
+.ctrl-group strong {
+  color: var(--text);
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+/* =============================================
+   GAME OVER SCREEN
+   ============================================= */
+.gameover-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 48px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  min-width: 380px;
+  text-align: center;
+}
+
+.winner-text {
+  font-size: 36px;
+  font-weight: 900;
+}
+
+.final-scores {
+  display: flex;
+  gap: 30px;
+  font-size: 15px;
+}
+
+.score-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.score-col .team-name {
+  font-weight: 700;
+  font-size: 16px;
+}
+.score-col .score-num {
+  font-size: 28px;
+  font-weight: 900;
+}
+
+/* =============================================
+   ANIMATIONS
+   ============================================= */
+@keyframes flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+.line-clear-flash { animation: flash 0.3s ease 2; }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+.garbage-shake { animation: shake 0.3s ease; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.screen.active { animation: fadeIn 0.2s ease; }
