@@ -354,70 +354,40 @@ function updateNextPreviews(teamLetter, state, players) {
 // =============================================
 // INPUT HANDLING
 // =============================================
-// Map: key -> action, team (to know which slot controls which action)
-// P1 controls: WASD + Q (hard drop)
-// P2 controls: arrows + numpad 0
-const P1_KEYS = {
-  'a': 'left',
-  'd': 'right',
-  's': 'down',
-  'w': 'rotate',
-  'q': 'hardDrop',
-};
-
-const P2_KEYS = {
+// Cada jugador está en su propio dispositivo.
+// Aceptamos WASD, flechas y Espacio — todos mapean a la pieza del jugador actual.
+const KEY_MAP = {
   'ArrowLeft':  'left',
   'ArrowRight': 'right',
   'ArrowDown':  'down',
   'ArrowUp':    'rotate',
-  '0':          'hardDrop',
+  'a': 'left',
+  'd': 'right',
+  's': 'down',
+  'w': 'rotate',
+  'A': 'left',
+  'D': 'right',
+  'S': 'down',
+  'W': 'rotate',
+  ' ': 'hardDrop',   // Espacio = hard drop
+  'ArrowUp': 'rotate',
 };
-
-function getActionForKey(key) {
-  // Determine which key map to use based on this player's slot
-  if (mySlot === 0 || mySlot === 2) {
-    return P1_KEYS[key] || null;
-  } else {
-    return P2_KEYS[key] || null;
-  }
-}
-
-// For two players on same machine sharing a keyboard:
-// Slot 0 (team A, player 1): WASD + Q
-// Slot 1 (team A, player 2): Arrows + 0
-// Slot 2 (team B, player 1): WASD + Q  (if only one player in team B)
-// Slot 3 (team B, player 2): Arrows + 0
-
-// Actually, for co-op on same machine, emit from current socket = current player
-// The server routes input to the right piece by socket ID.
-// Each socket plays as one player. On same machine, the two players share the machine.
-// We send inputs based on which keys are pressed regardless of slot.
 
 function onKeyDown(e) {
   if (e.repeat) return;
-  const key = e.key;
+  const action = KEY_MAP[e.key];
+  if (!action) return;
 
-  // Prevent page scroll
-  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(key)) {
+  // Evitar scroll de página
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
     e.preventDefault();
   }
 
-  // P1 keys (slot 0 or 2)
-  if (P1_KEYS[key] && (mySlot === 0 || mySlot === 2)) {
-    const action = P1_KEYS[key];
-    sendInput(action);
-    if (action !== 'rotate' && action !== 'hardDrop') {
-      startKeyRepeat(key, action);
-    }
-  }
+  sendInput(action);
 
-  // P2 keys (slot 1 or 3)
-  if (P2_KEYS[key] && (mySlot === 1 || mySlot === 3)) {
-    const action = P2_KEYS[key];
-    sendInput(action);
-    if (action !== 'rotate' && action !== 'hardDrop') {
-      startKeyRepeat(key, action);
-    }
+  // Auto-repeat para movimiento lateral y soft drop
+  if (action !== 'rotate' && action !== 'hardDrop') {
+    startKeyRepeat(e.key, action);
   }
 }
 
