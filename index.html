@@ -35,6 +35,12 @@
       <h2>Room: <span id="room-code-display" class="code-badge"></span></h2>
       <button class="btn btn-ghost btn-sm" id="btn-copy-code">📋 Copy Code</button>
 
+      <div id="mode-selector" class="mode-selector">
+        <span class="mode-label">Mode:</span>
+        <button class="btn btn-mode active" data-mode="1v1">⚔️ 1v1</button>
+        <button class="btn btn-mode" data-mode="2v2">🤝 2v2 Co-op</button>
+      </div>
+
       <div class="teams-grid">
         <div class="team-box team-a">
           <div class="team-label">🟦 Team A</div>
@@ -65,16 +71,16 @@
         <div class="team-header team-a-header">🟦 Team A</div>
         <div id="team-a-stats" class="team-stats"></div>
         <div class="board-wrap">
-          <canvas id="canvas-a" width="200" height="400"></canvas>
+          <canvas id="canvas-a" width="260" height="520"></canvas>
         </div>
         <div class="next-pieces-row">
           <div class="next-wrap" id="next-a-0">
             <div class="next-label">P1 Next</div>
-            <canvas class="next-canvas" width="80" height="80"></canvas>
+            <canvas class="next-canvas" width="96" height="96"></canvas>
           </div>
           <div class="next-wrap" id="next-a-1">
             <div class="next-label">P2 Next</div>
-            <canvas class="next-canvas" width="80" height="80"></canvas>
+            <canvas class="next-canvas" width="96" height="96"></canvas>
           </div>
         </div>
       </div>
@@ -107,16 +113,16 @@
         <div class="team-header team-b-header">🟥 Team B</div>
         <div id="team-b-stats" class="team-stats"></div>
         <div class="board-wrap">
-          <canvas id="canvas-b" width="200" height="400"></canvas>
+          <canvas id="canvas-b" width="260" height="520"></canvas>
         </div>
         <div class="next-pieces-row">
           <div class="next-wrap" id="next-b-0">
             <div class="next-label">P3 Next</div>
-            <canvas class="next-canvas" width="80" height="80"></canvas>
+            <canvas class="next-canvas" width="96" height="96"></canvas>
           </div>
           <div class="next-wrap" id="next-b-1">
             <div class="next-label">P4 Next</div>
-            <canvas class="next-canvas" width="80" height="80"></canvas>
+            <canvas class="next-canvas" width="96" height="96"></canvas>
           </div>
         </div>
       </div>

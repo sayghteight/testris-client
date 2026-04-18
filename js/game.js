@@ -12,6 +12,7 @@ let isSpectator = false;
 let isHost = false;
 let gameState = null; // latest state from server
 let renderLoopId = null;
+let currentMode = '1v1'; // '1v1' | '2v2'
 
 // ---- Input repeat timers ----
 const INPUT_REPEAT_DELAY = 150; // ms before auto-repeat
@@ -55,12 +56,14 @@ function initSocket() {
     console.log('[Socket] Connected:', mySocketId);
   });
 
-  socket.on('lobbyUpdate', ({ players }) => {
-    updateWaitingRoom(players);
+  socket.on('lobbyUpdate', ({ players, mode }) => {
+    if (mode) currentMode = mode;
+    updateWaitingRoom(players, mode || currentMode);
   });
 
-  socket.on('gameStarted', ({ players }) => {
-    updateWaitingRoom(players);
+  socket.on('gameStarted', ({ players, mode }) => {
+    if (mode) currentMode = mode;
+    updateWaitingRoom(players, currentMode);
     showScreen('game');
     startRenderLoop();
   });
@@ -92,10 +95,14 @@ document.getElementById('btn-create').addEventListener('click', () => {
     mySlot = res.slot;
     isHost = mySlot === 0;
     isSpectator = false;
+    if (res.mode) currentMode = res.mode;
 
     document.getElementById('room-code-display').textContent = roomCode;
     document.getElementById('spectator-badge').classList.add('hidden');
-    updateWaitingRoom(res.players);
+    // Host sees mode selector, others don't
+    document.getElementById('mode-selector').style.display = 'flex';
+    updateModeButtons(currentMode);
+    updateWaitingRoom(res.players, currentMode);
     showScreen('waiting');
   });
 });
@@ -110,22 +117,26 @@ document.getElementById('btn-join').addEventListener('click', () => {
   socket.emit('joinRoom', { name, roomCode: code }, (res) => {
     if (res.error) return showLobbyError(res.error);
     roomCode = res.roomCode;
+    if (res.mode) currentMode = res.mode;
 
     if (res.spectator) {
       isSpectator = true;
       myTeam = null;
       document.getElementById('spectator-badge').classList.remove('hidden');
       document.getElementById('btn-switch-team').classList.add('hidden');
+      document.getElementById('mode-selector').style.display = 'none';
     } else {
       myTeam = res.team;
       mySlot = res.slot;
       isHost = mySlot === 0;
       isSpectator = false;
       document.getElementById('spectator-badge').classList.add('hidden');
+      document.getElementById('mode-selector').style.display = isHost ? 'flex' : 'none';
     }
 
     document.getElementById('room-code-display').textContent = roomCode;
-    updateWaitingRoom(res.players || []);
+    updateModeButtons(currentMode);
+    updateWaitingRoom(res.players || [], currentMode);
     showScreen('waiting');
   });
 });
@@ -134,6 +145,19 @@ document.getElementById('btn-copy-code').addEventListener('click', () => {
   navigator.clipboard.writeText(roomCode).catch(() => {});
   document.getElementById('btn-copy-code').textContent = '✅ Copied!';
   setTimeout(() => document.getElementById('btn-copy-code').textContent = '📋 Copy Code', 1500);
+});
+
+// Mode buttons (host only)
+document.querySelectorAll('.btn-mode').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    if (!isHost) return;
+    const mode = btn.dataset.mode;
+    socket.emit('setMode', mode, (res) => {
+      if (res?.error) return alert(res.error);
+      currentMode = mode;
+      updateModeButtons(mode);
+    });
+  });
 });
 
 document.getElementById('btn-switch-team').addEventListener('click', () => {
@@ -163,7 +187,18 @@ document.getElementById('btn-back-lobby').addEventListener('click', () => {
 // =============================================
 // WAITING ROOM UI
 // =============================================
-function updateWaitingRoom(players) {
+function updateModeButtons(mode) {
+  document.querySelectorAll('.btn-mode').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.mode === mode);
+  });
+  // Disable buttons for non-host
+  document.querySelectorAll('.btn-mode').forEach((btn) => {
+    btn.disabled = !isHost;
+  });
+}
+
+function updateWaitingRoom(players, mode) {
+  mode = mode || currentMode;
   const slotsA = document.getElementById('team-a-players');
   const slotsB = document.getElementById('team-b-players');
   slotsA.innerHTML = '';
@@ -171,13 +206,16 @@ function updateWaitingRoom(players) {
 
   const teamA = players.filter(p => p.team === 'A');
   const teamB = players.filter(p => p.team === 'B');
+  const maxPerTeam = mode === '2v2' ? 2 : 1;
 
   function renderSlots(container, team, list) {
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < maxPerTeam; i++) {
       const p = list[i];
       const div = document.createElement('div');
       div.className = 'player-slot' + (p ? ` filled team-${team.toLowerCase()}${!p.connected ? ' offline' : ''}` : '');
-      div.textContent = p ? `${p.connected ? '🟢' : '🔴'} ${p.name}${p.socketId === mySocketId ? ' (you)' : ''}` : `— Slot ${i+1}`;
+      div.textContent = p
+        ? `${p.connected ? '🟢' : '🔴'} ${p.name}${p.socketId === mySocketId ? ' (you)' : ''}`
+        : `— Slot ${i + 1}`;
       container.appendChild(div);
     }
   }
@@ -185,14 +223,18 @@ function updateWaitingRoom(players) {
   renderSlots(slotsA, 'A', teamA);
   renderSlots(slotsB, 'B', teamB);
 
-  // Start button only for host
+  // Start button: need at least 1 per team
   const startBtn = document.getElementById('btn-start');
-  const canStart = players.length >= 2;
-  startBtn.disabled = !isHost || !canStart;
+  const hasMinPlayers = teamA.length >= 1 && teamB.length >= 1;
+  startBtn.disabled = !isHost || !hasMinPlayers;
 
+  const hint = mode === '2v2'
+    ? `Modo Co-op 2v2 — ${players.length}/4 jugadores`
+    : `Modo 1v1 — ${players.length}/2 jugadores`;
   document.getElementById('waiting-hint').textContent =
-    players.length < 2 ? 'Waiting for players... (min 2)' :
-    isHost ? 'Ready to start!' : 'Waiting for host to start...';
+    !hasMinPlayers ? hint + ' (se necesitan ambos equipos)' :
+    isHost ? hint + ' — ¡Listos para empezar!' :
+    hint + ' — Esperando al anfitrión...';
 }
 
 // =============================================

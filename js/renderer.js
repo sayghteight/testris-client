@@ -131,7 +131,7 @@ function renderDeadOverlay(ctx) {
   ctx.fillStyle = 'rgba(0,0,0,0.65)';
   ctx.fillRect(0, 0, BOARD_WIDTH * CELL_SIZE, BOARD_HEIGHT * CELL_SIZE);
   ctx.fillStyle = '#ff4455';
-  ctx.font = 'bold 20px Segoe UI';
+  ctx.font = `bold ${CELL_SIZE + 2}px Segoe UI`;
   ctx.textAlign = 'center';
   ctx.fillText('GAME OVER', BOARD_WIDTH * CELL_SIZE / 2, BOARD_HEIGHT * CELL_SIZE / 2);
 }

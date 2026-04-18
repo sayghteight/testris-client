@@ -4,7 +4,7 @@
 
 const BOARD_WIDTH = 10;
 const BOARD_HEIGHT = 20;
-const CELL_SIZE = 20; // pixels per cell
+const CELL_SIZE = 26; // pixels per cell
 
 // Color palette (index matches server color values)
 const COLORS = [
